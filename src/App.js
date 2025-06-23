@@ -5,22 +5,33 @@ function App() {
   const [examData, setExamData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
+  const [examSelection, setExamSelection] = useState(null); // null: 선택 안됨, 'original': 기존시험, '2004': 2004년도시험
 
-  useEffect(() => {
-    fetch("/data.json")
+  const loadExamData = (examType) => {
+    setLoading(true);
+    setExamSelection(examType);
+
+    const fileName = examType === "2004" ? "/data2004.json" : "/data.json";
+
+    fetch(fileName)
       .then((response) => response.json())
       .then((data) => {
         setExamData(data);
         setLoading(false);
+        // 상태 초기화
+        setCurrentQuestionIndex(0);
+        setSelectedAnswers({});
+        setIsSubmitted(false);
+        setScore({ correct: 0, total: 0 });
       })
       .catch((error) => {
         console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
         setLoading(false);
       });
-  }, []);
+  };
 
   const handleAnswerSelect = (questionId, answer) => {
     setSelectedAnswers((prev) => ({
@@ -76,6 +87,15 @@ function App() {
     setScore({ correct: 0, total: 0 });
   };
 
+  const handleBackToSelection = () => {
+    setExamSelection(null);
+    setExamData(null);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswers({});
+    setIsSubmitted(false);
+    setScore({ correct: 0, total: 0 });
+  };
+
   const getQuestionStatus = (questionId) => {
     if (!isSubmitted) {
       return selectedAnswers[questionId] ? "answered" : "";
@@ -126,6 +146,32 @@ function App() {
     return "";
   };
 
+  // 시험 선택 화면
+  if (!examSelection) {
+    return (
+      <div className="App">
+        <div className="exam-selection">
+          <h1>도자기공예산업기사 시험 선택</h1>
+          <div className="exam-options">
+            <div
+              className="exam-option"
+              onClick={() => loadExamData("original")}
+            >
+              <h2>울래뚜의 도자기 공예산업기사 도전!!</h2>
+              <p>기본 시험 문제</p>
+              <p>60문제</p>
+            </div>
+            <div className="exam-option" onClick={() => loadExamData("2004")}>
+              <h2>2004년도 산업기사 일반검정 제3회</h2>
+              <p>2004년도 실제 시험 문제</p>
+              <p>60문제</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="App">
@@ -147,6 +193,11 @@ function App() {
   return (
     <div className="App">
       <header className="exam-header">
+        <div className="header-top">
+          <button className="back-button" onClick={handleBackToSelection}>
+            ← 시험 선택으로 돌아가기
+          </button>
+        </div>
         <h1>{examData.examInfo.title}</h1>
         <div className="exam-info">
           <span>자격종목: {examData.examInfo.subject}</span>
@@ -192,6 +243,23 @@ function App() {
 
           <div className="question-content">
             <p className="question-text">{currentQuestion.question}</p>
+
+            {/* 이미지가 있는 경우 표시 */}
+            {currentQuestion.img && (
+              <div className="question-image">
+                <img
+                  src={`/img/${currentQuestion.img}`}
+                  alt={`문제 ${currentQuestion.id} 이미지`}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "block";
+                  }}
+                />
+                <div className="image-error" style={{ display: "none" }}>
+                  이미지를 불러올 수 없습니다.
+                </div>
+              </div>
+            )}
 
             <div className="options">
               {Object.entries(currentQuestion.options).map(([key, value]) => (
