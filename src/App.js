@@ -6,6 +6,8 @@ function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [score, setScore] = useState({ correct: 0, total: 0 });
 
   useEffect(() => {
     fetch("/data.json")
@@ -43,6 +45,87 @@ function App() {
     setCurrentQuestionIndex(index);
   };
 
+  const handleSubmit = () => {
+    setIsSubmitted(true);
+
+    // 점수 계산
+    let correctCount = 0;
+    examData.questions.forEach((question) => {
+      const correctAnswer = examData.answer[question.id - 1];
+      const userAnswer = selectedAnswers[question.id];
+
+      if (userAnswer) {
+        const answerMapping = { 1: "가", 2: "나", 3: "다", 4: "라" };
+        const correctAnswerKey = answerMapping[correctAnswer];
+
+        if (userAnswer === correctAnswerKey) {
+          correctCount++;
+        }
+      }
+    });
+
+    setScore({
+      correct: correctCount,
+      total: examData.questions.length,
+    });
+  };
+
+  const handleReset = () => {
+    setSelectedAnswers({});
+    setIsSubmitted(false);
+    setScore({ correct: 0, total: 0 });
+  };
+
+  const getQuestionStatus = (questionId) => {
+    if (!isSubmitted) {
+      return selectedAnswers[questionId] ? "answered" : "";
+    }
+
+    const correctAnswer = examData.answer[questionId - 1];
+    const userAnswer = selectedAnswers[questionId];
+
+    // 답을 선택하지 않은 경우
+    if (!userAnswer) {
+      return "wrong";
+    }
+
+    // 답안 매핑: 1=가, 2=나, 3=다, 4=라
+    const answerMapping = { 1: "가", 2: "나", 3: "다", 4: "라" };
+    const correctAnswerKey = answerMapping[correctAnswer];
+
+    return userAnswer === correctAnswerKey ? "correct" : "wrong";
+  };
+
+  const getOptionStatus = (questionId, optionKey) => {
+    if (!isSubmitted) {
+      return selectedAnswers[questionId] === optionKey ? "selected" : "";
+    }
+
+    const correctAnswer = examData.answer[questionId - 1];
+    const userAnswer = selectedAnswers[questionId];
+
+    // 답안 매핑: 1=가, 2=나, 3=다, 4=라
+    const answerMapping = { 1: "가", 2: "나", 3: "다", 4: "라" };
+    const correctAnswerKey = answerMapping[correctAnswer];
+
+    // 정답인 경우
+    if (optionKey === correctAnswerKey) {
+      return "correct";
+    }
+
+    // 사용자가 선택한 답이 틀린 경우
+    if (userAnswer === optionKey && userAnswer !== correctAnswerKey) {
+      return "wrong";
+    }
+
+    // 사용자가 선택한 답이 정답인 경우
+    if (userAnswer === optionKey && userAnswer === correctAnswerKey) {
+      return "selected";
+    }
+
+    return "";
+  };
+
   if (loading) {
     return (
       <div className="App">
@@ -60,7 +143,6 @@ function App() {
   }
 
   const currentQuestion = examData.questions[currentQuestionIndex];
-  const selectedAnswer = selectedAnswers[currentQuestion.id];
 
   return (
     <div className="App">
@@ -68,26 +150,35 @@ function App() {
         <h1>{examData.examInfo.title}</h1>
         <div className="exam-info">
           <span>자격종목: {examData.examInfo.subject}</span>
-          <span>종목코드: {examData.examInfo.code}</span>
           <span>시험시간: {examData.examInfo.time}</span>
-          <span>문제지형별: {examData.examInfo.type}</span>
         </div>
+        {isSubmitted && (
+          <div className="score-display">
+            <span className="score-text">
+              정답: {score.correct} / {score.total} (
+              {Math.round((score.correct / score.total) * 100)}%)
+            </span>
+          </div>
+        )}
       </header>
 
       <div className="exam-container">
         <div className="question-navigation">
           <div className="question-grid">
-            {examData.questions.map((question, index) => (
-              <button
-                key={question.id}
-                className={`question-number ${
-                  index === currentQuestionIndex ? "current" : ""
-                } ${selectedAnswers[question.id] ? "answered" : ""}`}
-                onClick={() => goToQuestion(index)}
-              >
-                {question.id}
-              </button>
-            ))}
+            {examData.questions.map((question, index) => {
+              const status = getQuestionStatus(question.id);
+              return (
+                <button
+                  key={question.id}
+                  className={`question-number ${
+                    index === currentQuestionIndex ? "current" : ""
+                  } ${status}`}
+                  onClick={() => goToQuestion(index)}
+                >
+                  {question.id}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -106,9 +197,10 @@ function App() {
               {Object.entries(currentQuestion.options).map(([key, value]) => (
                 <div
                   key={key}
-                  className={`option ${
-                    selectedAnswer === key ? "selected" : ""
-                  }`}
+                  className={`option ${getOptionStatus(
+                    currentQuestion.id,
+                    key
+                  )}`}
                   onClick={() => handleAnswerSelect(currentQuestion.id, key)}
                 >
                   <span className="option-label">{key}.</span>
@@ -126,13 +218,27 @@ function App() {
             >
               이전 문제
             </button>
-            <button
-              className="nav-button next"
-              onClick={goToNextQuestion}
-              disabled={currentQuestionIndex === examData.questions.length - 1}
-            >
-              다음 문제
-            </button>
+            <div className="right-buttons">
+              <button
+                className="nav-button next"
+                onClick={goToNextQuestion}
+                disabled={
+                  currentQuestionIndex === examData.questions.length - 1
+                }
+              >
+                다음 문제
+              </button>
+              <button
+                className="nav-button submit"
+                onClick={handleSubmit}
+                disabled={isSubmitted}
+              >
+                제출
+              </button>
+              <button className="nav-button reset" onClick={handleReset}>
+                초기화
+              </button>
+            </div>
           </div>
         </div>
       </div>

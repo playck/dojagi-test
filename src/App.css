@@ -25,12 +25,30 @@
   gap: 30px;
   flex-wrap: wrap;
   font-size: 14px;
+  margin-bottom: 15px;
 }
 
 .exam-info span {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 5px 10px;
   border-radius: 4px;
+}
+
+/* 점수 표시 */
+.score-display {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.score-text {
+  background-color: #e67e22;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* 메인 컨테이너 */
@@ -88,6 +106,29 @@
 }
 
 .question-number.answered.current {
+  border-color: #3498db;
+  background-color: #3498db;
+}
+
+/* 정답/오답 표시 */
+.question-number.correct {
+  border-color: #27ae60;
+  background-color: #27ae60;
+  color: white;
+}
+
+.question-number.correct.current {
+  border-color: #3498db;
+  background-color: #3498db;
+}
+
+.question-number.wrong {
+  border-color: #e74c3c;
+  background-color: #e74c3c;
+  color: white;
+}
+
+.question-number.wrong.current {
   border-color: #3498db;
   background-color: #3498db;
 }
@@ -167,6 +208,19 @@
   color: white;
 }
 
+/* 제출 후 보기 상태 */
+.option.correct {
+  border-color: #27ae60;
+  background-color: #27ae60;
+  color: white;
+}
+
+.option.wrong {
+  border-color: #e74c3c;
+  background-color: #e74c3c;
+  color: white;
+}
+
 .option-label {
   font-weight: bold;
   margin-right: 15px;
@@ -182,9 +236,15 @@
 .navigation-buttons {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 40px;
   padding-top: 20px;
   border-top: 2px solid #ecf0f1;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .nav-button {
@@ -214,6 +274,24 @@
 
 .nav-button.next:hover:not(:disabled) {
   background-color: #2980b9;
+}
+
+.nav-button.submit {
+  background-color: #e67e22;
+  color: white;
+}
+
+.nav-button.submit:hover:not(:disabled) {
+  background-color: #d35400;
+}
+
+.nav-button.reset {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.nav-button.reset:hover {
+  background-color: #8e44ad;
 }
 
 .nav-button:disabled {
@@ -266,9 +344,19 @@
     gap: 10px;
   }
 
+  .score-text {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
   .navigation-buttons {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .right-buttons {
+    flex-direction: column;
+    width: 100%;
   }
 
   .nav-button {
