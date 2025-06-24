@@ -8,13 +8,20 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [examSelection, setExamSelection] = useState(null); // null: 선택 안됨, 'original': 기존시험, '2004': 2004년도시험
+  const [examSelection, setExamSelection] = useState(null); // null: 선택 안됨, 'original': 기존시험, 'test2': 시험문제2, '2004': 2004년도시험
 
   const loadExamData = (examType) => {
     setLoading(true);
     setExamSelection(examType);
 
-    const fileName = examType === "2004" ? "/data2004.json" : "/data.json";
+    let fileName;
+    if (examType === "2004") {
+      fileName = "/data2004.json";
+    } else if (examType === "test2") {
+      fileName = "/data2.json";
+    } else {
+      fileName = "/data.json";
+    }
 
     fetch(fileName)
       .then((response) => response.json())
@@ -159,6 +166,11 @@ function App() {
             >
               <h2>울래뚜의 도자기 공예산업기사 도전!!</h2>
               <p>기본 시험 문제</p>
+              <p>60문제</p>
+            </div>
+            <div className="exam-option" onClick={() => loadExamData("test2")}>
+              <h2>울래뚜의 도자기 공예산업기사 도전!! 시험문제 2</h2>
+              <p>추가 시험 문제</p>
               <p>60문제</p>
             </div>
             <div className="exam-option" onClick={() => loadExamData("2004")}>
