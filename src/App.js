@@ -8,7 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [examSelection, setExamSelection] = useState(null); // null: 선택 안됨, 'original': 기존시험, 'test2': 시험문제2, '2004': 2004년도시험
+  const [examSelection, setExamSelection] = useState(null); // null: 선택 안됨, 'original': 기존시험, 'test2': 시험문제2, '2004': 2004년도시험, '2012': 2012년도시험, '2014': 2014년도시험
 
   const loadExamData = (examType) => {
     setLoading(true);
@@ -19,6 +19,8 @@ function App() {
       fileName = "/data2004.json";
     } else if (examType === "2012") {
       fileName = "/data2012.json";
+    } else if (examType === "2014") {
+      fileName = "/data2014.json";
     } else if (examType === "test2") {
       fileName = "/data2.json";
     } else {
@@ -161,6 +163,9 @@ function App() {
       <div className="App">
         <div className="exam-selection">
           <h1>도자기공예산업기사 시험 선택</h1>
+          <div className="blessing-message">
+            <p>💖 울래써의 합격을 기원합니다 💖</p>
+          </div>
           <div className="exam-options">
             <div
               className="exam-option"
@@ -183,6 +188,11 @@ function App() {
             <div className="exam-option" onClick={() => loadExamData("2012")}>
               <h2>2012년 도자기공예능사 필기시험</h2>
               <p>2012년도 실제 시험 문제</p>
+              <p>60문제</p>
+            </div>
+            <div className="exam-option" onClick={() => loadExamData("2014")}>
+              <h2>2014년도 기능사 제2회 필기시험</h2>
+              <p>2014년도 도자기공예기능사 실제 시험 문제</p>
               <p>60문제</p>
             </div>
           </div>

@@ -475,3 +475,59 @@
     min-width: auto;
   }
 }
+
+.blessing-message {
+  margin: 20px 0 30px 0;
+  text-align: center;
+}
+
+.blessing-message p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96ceb4,
+    #feca57
+  );
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  margin: 0;
+  padding: 15px 20px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.blessing-message p:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+/* 다크 모드나 다른 테마에서도 잘 보이도록 대안 스타일 */
+@supports not (-webkit-background-clip: text) {
+  .blessing-message p {
+    color: #2c3e50;
+    background: none;
+    -webkit-text-fill-color: initial;
+  }
+}
