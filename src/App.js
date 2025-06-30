@@ -17,6 +17,8 @@ function App() {
     let fileName;
     if (examType === "2004") {
       fileName = "/data2004.json";
+    } else if (examType === "2012") {
+      fileName = "/data2012.json";
     } else if (examType === "test2") {
       fileName = "/data2.json";
     } else {
@@ -176,6 +178,11 @@ function App() {
             <div className="exam-option" onClick={() => loadExamData("2004")}>
               <h2>2004년도 산업기사 일반검정 제3회</h2>
               <p>2004년도 실제 시험 문제</p>
+              <p>60문제</p>
+            </div>
+            <div className="exam-option" onClick={() => loadExamData("2012")}>
+              <h2>2012년 도자기공예능사 필기시험</h2>
+              <p>2012년도 실제 시험 문제</p>
               <p>60문제</p>
             </div>
           </div>
